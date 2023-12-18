@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supervisor_WebUI</title>
+    <link rel="stylesheet" href="mdui.css">
+    <link rel="stylesheet" href="icon.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <mdui-tabs id="tabs" value="tab-1" full-width style="max-width: 600px;margin: 0 auto;">
+    </mdui-tabs>
+    <mdui-dialog id="action-dialog" class="my-dialog" headline="a" close-on-esc close-on-overlay-click>
+        <div class="slot-stretch"><!--占位支撑--></div>
+        <mdui-tabs value="tab-1" full-width>
+            <mdui-tab value="tab-1">日志</mdui-tab>
+            <mdui-tab value="tab-2">信息</mdui-tab>
+            <mdui-tab value="tab-3">更多</mdui-tab>
+
+            <mdui-tab-panel slot="panel" value="tab-1">
+                <mdui-list>
+                    <mdui-collapse class="example-value">
+                        <mdui-collapse-item value="item-1">
+                            <mdui-list-item style="background-color: rgb(103 80 164 / 15%); border-radius: 10px;"
+                                slot="header" icon="settings">选项</mdui-list-item>
+                            <div style="display: flex;margin-bottom: 5px;">
+                                <mdui-text-field class="LogOptionOffset" type="number" label="Offset"
+                                    value="-1024"></mdui-text-field>
+                                <mdui-text-field class="LogOptionLength" type="number" label="Length"
+                                    value="0"></mdui-text-field>
+                            </div>
+                            <mdui-chip onclick="Chip_Log_Options(1, 'action-dialog')">全部</mdui-chip>
+                            <mdui-chip i="2" onclick="Chip_Log_Options(2, 'action-dialog')">最近1KB</mdui-chip>
+                            <mdui-chip i="3" onclick="Chip_Log_Options(3, 'action-dialog')">最近2KB</mdui-chip>
+                            <mdui-chip i="4" onclick="Chip_Log_Options(4, 'action-dialog')">最早1KB</mdui-chip>
+                        </mdui-collapse-item>
+                    </mdui-collapse>
+                </mdui-list>
+                <div style="display: flex;justify-content: space-between;flex-wrap: wrap;margin: 10px">
+                    <mdui-button icon="delete_forever" style="background-color: brown;margin: 5px;"
+                        onclick="clearLog(this, 'process')">清空日志</mdui-button>
+                    <div>
+                        <div style="display: flex;flex-wrap: wrap;align-items: center;">
+                            <mdui-button onclick="readProcessLog('readProcessStdoutLog', 'action-dialog')"
+                                style="margin: 5px;">读取stdout</mdui-button>
+                            <mdui-button onclick="readProcessLog('readProcessStderrLog', 'action-dialog')"
+                                style="margin: 5px;">读取stderr</mdui-button>
+                        </div>
+                        <div style="display: flex;flex-wrap: wrap;align-items: center;justify-content: space-between;">
+                            <div style="display: flex;align-items: center;padding-left: 10px;"><mdui-switch
+                                    class="OpenNewWindow" style="margin: 5px;"></mdui-switch>新窗口</div>
+                            <mdui-button onclick="readProcessLog('readProcessLog', 'action-dialog')"
+                                style="margin: 5px;">&nbsp;读取日志&nbsp;</mdui-button>
+                        </div>
+                    </div>
+                </div>
+                <iframe class="log_iframe" src="" frameborder="0" style="width: 100%;height: 50vh;display: none;"></iframe>
+            </mdui-tab-panel>
+            <mdui-tab-panel slot="panel" value="tab-2">
+                <mdui-list>
+                    <mdui-collapse id="info-tab" accordion value="item-1">
+                        <mdui-collapse-item value="item-1">
+                            <mdui-list-item slot="header" icon="near_me">状态信息</mdui-list-item>
+                            <div id="state-info" class="mdui-table"></div>
+                        </mdui-collapse-item>
+                        <mdui-collapse-item value="item-2">
+                            <mdui-list-item slot="header" icon="near_me">配置信息</mdui-list-item>
+                            <div id="process-config" class="mdui-table"></div>
+                        </mdui-collapse-item>
+                    </mdui-collapse>
+                </mdui-list>
+            </mdui-tab-panel>
+            <mdui-tab-panel slot="panel" value="tab-3">
+                <mdui-card variant="outlined">
+                    向程序发送Signal
+                    <div style="display: flex; align-items: center;">
+                        <mdui-text-field style="margin: 10px;" class="ProcessesSignal" type="number" label="Signal"
+                            value="2"></mdui-text-field>
+                        <mdui-button-icon onclick="signalProcesses(this, 'action-dialog', false)" variant="filled"
+                            icon="arrow_forward"></mdui-button-icon>
+                    </div>
+                </mdui-card>
+            </mdui-tab-panel>
+        </mdui-tabs>
+    </mdui-dialog>
+
+    <mdui-dialog id="action-dialog-server" class="my-dialog" headline="b" close-on-esc close-on-overlay-click>
+        <div class="slot-stretch"><!--占位支撑--></div>
+        <mdui-tabs value="tab-1" full-width>
+            <mdui-tab value="tab-1">动作</mdui-tab>
+            <mdui-tab value="tab-2">日志</mdui-tab>
+            <mdui-tab value="tab-3">更多</mdui-tab>
+
+            <mdui-tab-panel slot="panel" value="tab-1">
+                <mdui-card class="btn-card" variant="outlined">
+                    <mdui-button icon="restart_alt" onclick="CommonWaitAction('restart', this)">重启</mdui-button>
+                    <mdui-button icon="power_settings_new" onclick="CommonWaitAction('shutdown', this)">关闭</mdui-button>
+                    <mdui-button icon="find_replace" onclick="reloadConfig(this)">重载</mdui-button>
+                </mdui-card>
+                <mdui-card class="btn-card" variant="outlined">
+                    <mdui-button icon="play_arrow"
+                        onclick="CommonWaitAction('startAllProcesses', this)">启动全部程序</mdui-button>
+                    <mdui-button icon="stop" onclick="CommonWaitAction('stopProcessGroup', this)">停止全部程序</mdui-button>
+                </mdui-card>
+
+                <mdui-card variant="outlined">
+                    向所有程序发送Signal
+                    <div style="display: flex; align-items: center;">
+                        <mdui-text-field style="margin: 10px;" class="ProcessesSignal" type="number" label="Signal"
+                            value="2"></mdui-text-field>
+                        <mdui-button-icon onclick="signalProcesses(this, 'action-dialog-server', true)" variant="filled"
+                            icon="arrow_forward"></mdui-button-icon>
+                    </div>
+                </mdui-card>
+
+            </mdui-tab-panel>
+            <mdui-tab-panel slot="panel" value="tab-2">
+                <mdui-list>
+                    <mdui-collapse class="example-value">
+                        <mdui-collapse-item value="item-1">
+                            <mdui-list-item style="background-color: rgb(103 80 164 / 15%); border-radius: 10px;"
+                                slot="header" icon="settings">选项</mdui-list-item>
+                            <div style="display: flex;margin-bottom: 5px;">
+                                <mdui-text-field class="LogOptionOffset" type="number" label="Offset"
+                                    value="-1024"></mdui-text-field>
+                                <mdui-text-field class="LogOptionLength" type="number" label="Length"
+                                    value="0"></mdui-text-field>
+                            </div>
+                            <mdui-chip onclick="Chip_Log_Options(1, 'action-dialog-server')">全部</mdui-chip>
+                            <mdui-chip i="2" onclick="Chip_Log_Options(2, 'action-dialog-server')">最近1KB</mdui-chip>
+                            <mdui-chip i="3" onclick="Chip_Log_Options(3, 'action-dialog-server')">最近2KB</mdui-chip>
+                            <mdui-chip i="4" onclick="Chip_Log_Options(4, 'action-dialog-server')">最早1KB</mdui-chip>
+                        </mdui-collapse-item>
+                    </mdui-collapse>
+                </mdui-list>
+                <div style="display: flex;justify-content: space-between;flex-wrap: wrap;margin: 10px">
+                    <div>
+                        <mdui-button style="background-color: brown;margin: 5px;"
+                            onclick="clearLog(this)">清空日志</mdui-button>
+                        <mdui-button style="background-color: brown;margin: 5px;"
+                            onclick="clearLog(this, 'all')">清空全部程序日志</mdui-button>
+                    </div>
+                    <div>
+                        <div style="display: flex;flex-wrap: wrap;align-items: center;justify-content: space-between;">
+                            <div style="display: flex;align-items: center;padding-left: 10px;"><mdui-switch
+                                    class="OpenNewWindow" style="margin: 5px;"></mdui-switch>新窗口</div>
+                            <mdui-button onclick="readProcessLog('readLog', 'action-dialog-server')"
+                                style="margin: 5px;">&nbsp;读取日志&nbsp;</mdui-button>
+                        </div>
+                    </div>
+                </div>
+                <iframe class="log_iframe" src="" frameborder="0" style="width: 100%;height: 100vh;display: none;"></iframe>
+            </mdui-tab-panel>
+            <mdui-tab-panel slot="panel" value="tab-3">
+            </mdui-tab-panel>
+        </mdui-tabs>
+    </mdui-dialog>
+
+    <mdui-dialog id="reloadConfigDialog" close-on-overlay-click close-on-esc>
+        <table class="mdui-table">
+            <thead>
+                <tr>
+                    <th>Added</th>
+                    <th>Changed</th>
+                    <th>Removed</th>
+                </tr>
+            </thead>
+            <tbody id="reloadConfigRusult">
+                <!-- <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr> -->
+            </tbody>
+        </table>
+    </mdui-dialog>
+
+    <script src="mdui.global.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

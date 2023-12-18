@@ -1,0 +1,111 @@
+.list_item_block {
+    display: flex;
+    align-items: center;
+}
+
+.item_btn {
+    width: 90px;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.item_name {
+    font-size: large;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.item_info {
+    font-size: small;
+    color: dimgray;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0 10px;
+    flex-grow:1;
+    text-wrap: nowrap;
+}
+
+.item_status {
+    width: 15px;
+    height: 15px;
+    border-radius: 10px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.status_running {
+    background-color: chartreuse;
+}
+
+.status_stopped {
+    background-color: red;
+}
+
+.server_info {
+    background-color: rgb(186 200 253 / 28%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.server_info_chips {
+    display: flex;
+    overflow-x: auto;
+}
+
+.server_info_chips mdui-chip{
+    flex-shrink: 0;
+    margin: 0px 2px;
+}
+
+.tabs_item {
+    padding: 5px 10px;
+    margin: 10px 0;
+    background-color: rgb(186 200 253 / 28%);
+    border-radius: 20px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.slot-stretch {
+    height: 0px;
+    width: 45rem;
+}
+
+.my-dialog::part(panel) {
+    padding: 0px 0px;
+    max-width: 45rem;
+}
+
+.my-dialog::part(body) {
+    overflow-x: hidden;
+}
+
+.my-dialog::part(headline) {
+    padding-left: 20px;
+    padding-top: 20px;
+}
+
+.my-dialog mdui-tab-panel {
+    padding: 20px;
+}
+
+.my-dialog mdui-card {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-card {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-card mdui-button  {
+    margin: 5px 5px;
+}

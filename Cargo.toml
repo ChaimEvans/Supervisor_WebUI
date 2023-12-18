@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "supervisor_webui",
+    "supervisor_xmlrpc",
+]
+resolver = "2"
+

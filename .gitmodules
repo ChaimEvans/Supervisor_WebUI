@@ -1,0 +1,3 @@
+[submodule "SupervisorXmlrpcAPI_rs"]
+	path = supervisor_xmlrpc
+	url = https://github.com/ChaimEvans/SupervisorXmlrpcAPI_rs.git
