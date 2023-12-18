@@ -30,6 +30,7 @@ lazy_static! {
     static ref SERVER_URLS: HashMap<String, String> = {
         let mut urls: Vec<String> = std::env::args().collect();
         urls.remove(0);
+        urls.remove(0);
         let mut urls_map: HashMap<String, String> = HashMap::new();
         for url in urls{
             if let Some(host) = dxr_client::Url::parse(&url).expect("Invalid Url.").host_str(){
@@ -492,6 +493,8 @@ async fn read_log(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let params: Vec<String> = std::env::args().collect();
+    let port = params[1].parse::<u16>().unwrap();
     HttpServer::new(|| {
         App::new()
             .service(get_html)
@@ -506,7 +509,7 @@ async fn main() -> std::io::Result<()> {
             .service(infos)
             .service(read_log)
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", port))?
     .run()
     .await
 }
