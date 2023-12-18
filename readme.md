@@ -1,5 +1,5 @@
 # Supervisor_WebUI
-A webui application for Supervisor to multiple supervisor servers
+A webui application for Supervisor to manage multiple supervisor servers
 
 ## Build
 ```shell
